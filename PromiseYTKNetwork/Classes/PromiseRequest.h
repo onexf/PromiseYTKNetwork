@@ -14,7 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface PromiseRequest : YTKRequest
 
 
+/// 发起请求
 - (AnyPromise *)launch;
+
+
+/// code非2000当作失败，返回code码和message
+- (AnyPromise *)statusLaunch;
 
 
 @end

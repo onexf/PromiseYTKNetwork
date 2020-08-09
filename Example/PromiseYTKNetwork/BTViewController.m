@@ -21,12 +21,13 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    BTPromiseRequest *request = [[BTPromiseRequest alloc] init];
-    
-    [request launch].then(^(NSDictionary *response) {
+    BTPromiseRequest *request1 = [[BTPromiseRequest alloc] init];
+    BTPromiseRequest *request2 = [[BTPromiseRequest alloc] init];
+
+    [request1 launch].then(^(NSDictionary *response) {
         NSLog(@"🚩🚩🚩🚩🚩🚩🚩🚩🚩🚩%@", response);
         
-        return [request launch];
+        return [request1 launch];
     }).then(^(NSDictionary *dict) {
         NSLog(@"🚩🚩🚩🚩%@", dict[@"code"]);
     }).catch(^(NSError *error){
@@ -34,6 +35,16 @@
     }).ensure(^{ // 隐藏HUD
         NSLog(@"无论成功还是失败，都结束了");
     });
+    
+    
+    PMKWhen(@[[request1 launch], [request2 launch]]).then(^(NSArray <NSDictionary *> *array) {
+        NSLog(@"%@", array.firstObject);
+    }).catch(^(NSError *error) {
+        NSLog(@"%@", error);
+    });
+    
+    
+    
 }
 
 - (void)didReceiveMemoryWarning

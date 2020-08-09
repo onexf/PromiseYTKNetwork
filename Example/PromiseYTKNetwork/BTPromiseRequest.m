@@ -11,16 +11,16 @@
 @implementation BTPromiseRequest 
 
 - (YTKRequestMethod)requestMethod {
-    return YTKRequestMethodGET;
+    return YTKRequestMethodPOST;
 }
 
 
 - (NSString *)requestUrl {
-    return @"";
+    return @"/mock/148/banner/index";
 }
 
 - (NSString *)baseUrl {
-    return @"http://oramind.com";
+    return @"http://yapi.ichangtou.com";
 }
 
 /// 设置请求头，验签

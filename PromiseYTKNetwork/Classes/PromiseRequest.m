@@ -41,7 +41,34 @@
     }];
     return result;
 }
+- (AnyPromise *)statusLaunch {
+    
+    AnyPromise *result = [AnyPromise promiseWithResolverBlock:^(PMKResolver _Nonnull resolve) {
+        [self startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
+            
+            PMKResolver fulfiller = ^(id responseObject){
+                if ([responseObject[@"code"] integerValue]== 2000) {
+                    resolve(PMKManifold(responseObject));
+                } else {
+                    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:responseObject[@"message"] forKey:NSLocalizedDescriptionKey];
+                    NSError *aError = [NSError errorWithDomain:NSCocoaErrorDomain code:[responseObject[@"code"] integerValue] userInfo:userInfo];
+                    resolve(aError);
+                }
+            };
+            
+            fulfiller(request.responseJSONObject);
+            
+        } failure:^(__kindof YTKBaseRequest * _Nonnull request) {
+            PMKResolver rejecter = ^(NSError *error){
+                resolve(error);
+            };
+            
+            rejecter(request.error);
+        }];
+    }];
+    return result;
 
+}
 
 - (YTKRequestSerializerType)requestSerializerType {
     return YTKRequestSerializerTypeJSON;

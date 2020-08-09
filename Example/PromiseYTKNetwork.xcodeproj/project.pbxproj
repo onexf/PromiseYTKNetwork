@@ -181,7 +181,7 @@
 				ORGANIZATIONNAME = onexf;
 				TargetAttributes = {
 					6003F589195388D20070C39A = {
-						DevelopmentTeam = M25G2A4RVS;
+						DevelopmentTeam = ME56X78JH7;
 					};
 				};
 			};
@@ -379,7 +379,7 @@
 			baseConfigurationReference = FADEDF9A9EEA69780745D18A /* Pods-PromiseYTKNetwork_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = M25G2A4RVS;
+				DEVELOPMENT_TEAM = ME56X78JH7;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PromiseYTKNetwork/PromiseYTKNetwork-Prefix.pch";
 				INFOPLIST_FILE = "PromiseYTKNetwork/PromiseYTKNetwork-Info.plist";
@@ -396,7 +396,7 @@
 			baseConfigurationReference = 2E43EED2CE372536A8FCF0D6 /* Pods-PromiseYTKNetwork_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = M25G2A4RVS;
+				DEVELOPMENT_TEAM = ME56X78JH7;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PromiseYTKNetwork/PromiseYTKNetwork-Prefix.pch";
 				INFOPLIST_FILE = "PromiseYTKNetwork/PromiseYTKNetwork-Info.plist";
