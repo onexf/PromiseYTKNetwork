@@ -1,7 +1,6 @@
-# PromiseYTKNetwork
+结合PromiseKit和YTKNetwork的网络请求组件，地址：[PromiseYTKNetwork](https://github.com/onexf/PromiseYTKNetwork)
 
 ## 一、 安装
-
 
 ```
 pod 'PromiseYTKNetwork'
@@ -41,7 +40,7 @@ pod 'PromiseYTKNetwork'
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ICTPromiseRequest : PromiseRequest
+@interface BTPromiseRequest : PromiseRequest
 
 @end
 
@@ -54,9 +53,9 @@ NS_ASSUME_NONNULL_END
 
 
 ```
-#import "ICTPromiseRequest.h"
+#import "BTPromiseRequest.h"
 
-@implementation ICTPromiseRequest
+@implementation BTPromiseRequest
 
 /// 设置请求头，验签
 - (NSDictionary<NSString *,NSString *> *)requestHeaderFieldValueDictionary {
@@ -65,33 +64,29 @@ NS_ASSUME_NONNULL_END
 
     requestSerializers[@"Content-Type"] = @"application/json";
 
-    requestSerializers[@"User-Agent"] = [PUB_INTERFACE returnStringWithEdition];
+    requestSerializers[@"User-Agent"] = userAgent;
 
     requestSerializers[@"platform"] = @"iOSApp";
 
     requestSerializers[@"version"] = [NSString stringWithFormat:@"V-%@", kAppVersion];
 
-    requestSerializers[@"projectId"] = @"1";
-
-    requestSerializers[@"campaignID"] = @"-1";
-
-    requestSerializers[@"taskID"] = @"-1";
-
-    requestSerializers[@"distributionID"] = @"874";
 
 
-    if (CTUserInfor.shareUser.token) {
 
-        requestSerializers[@"X-iChangTou-Json-Api-Token"] = CTUserInfor.shareUser.token;
 
-        NSString *timeNum = [PUB_INTERFACE getTimelSince1970];
-        requestSerializers[@"X-iChangTou-Json-Api-Signature-Timestamp"] = timeNum;
+
+    if (token) {
+
+        requestSerializers[@"X-bt-Json-Api-Token"] = token;
+
+        NSString *timeNum = timeNum;
+        requestSerializers[@"X-bt-Json-Api-Signature-Timestamp"] = timeNum;
 
         NSString *randomNum = [NSString stringWithFormat:@"%d",arc4random() % 10000];
-        requestSerializers[@"X-iChangTou-Json-Api-Nonce"] = randomNum;
+        requestSerializers[@"X-bt-Json-Api-Nonce"] = randomNum;
 
-        NSString *Signature = [PUB_INTERFACE sha1:[NSString stringWithFormat:@"%@%@%@",[CTUserInfor shareUser].token, randomNum, timeNum]];
-        requestSerializers[@"X-iChangTou-Json-Api-Signature"] = Signature;
+        NSString *Signature = [PUB_INTERFACE sha1:[NSString stringWithFormat:@"%@%@%@", token, randomNum, timeNum]];
+        requestSerializers[@"X-bt-Json-Api-Signature"] = Signature;
     }
 
     return requestSerializers;
@@ -154,7 +149,7 @@ NS_ASSUME_NONNULL_END
 
 
 ```
-
+/// 发起请求
 - (AnyPromise *)launch;
 
 ```
@@ -166,9 +161,9 @@ NS_ASSUME_NONNULL_END
 
 * OC
 
-    接口： `/ict-customer-api/banner/index`
+    接口： `banner/index`
 
-    新建`HomeBannerRequest`继承自`ICTPromiseRequest`
+    新建`HomeBannerRequest`继承自`BTPromiseRequest`
     
     ```
     #import "HomeBannerRequest.h"
@@ -177,7 +172,7 @@ NS_ASSUME_NONNULL_END
     
     
     - (NSString *)requestUrl {
-        return @"/ict-customer-api/banner/index";
+        return @"/banner/index";
     }
     
     
@@ -208,18 +203,17 @@ NS_ASSUME_NONNULL_END
     
     ```
     打印结果：
-![-w907](media/15951691682046/15951788018179.jpg)
 
-
+    ![](https://user-gold-cdn.xitu.io/2020/7/20/1736b64e2efc07c6?w=1814&h=692&f=png&s=648562)
 
 * Swift
 
-    接口： `/ict-customer-api/Invoice/Order/List`
+    接口： `/Invoice/Order/List`
 
 
     ```
     /// 可开票订单
-    class InvoiceOrderListRequest: ICTPromiseRequest {
+    class InvoiceOrderListRequest: BTPromiseRequest {
         
         
         /// 请求方式
@@ -229,13 +223,12 @@ NS_ASSUME_NONNULL_END
     
         /// 接口路径
         override func requestUrl() -> String {
-    //        return "/ict-customer-api/Invoice/Order/List"
-            return "/mock/148/Invoice/Order/List"
+            return "/Invoice/Order/List"
         }
         
         /// 统一域名，通过YTKNetworkConfig配置，yapi地址这里也可以重写
         override func baseUrl() -> String {
-            return "http://yapi.ichangtou.com"
+            return "http://yapi.bt.com"
         }
         
     
@@ -252,33 +245,17 @@ NS_ASSUME_NONNULL_END
 
         request.launch().done { response in
             
-            guard response != nil else {
-                SVProgressHUD.showError(withStatus: "response为空")
-                return
-            }
-
-            let dict: Dictionary<String, Any> = response as! Dictionary
-            
-            let code: Int = dict["code"] as! Int
-            
-            if code == 2000 {
-                let data: Dictionary = dict["data"] as! Dictionary<String, Any>
-                self.datas = InvoiceOrderItem.mj_objectArray(withKeyValuesArray: data["bodyList"]) as! [InvoiceOrderItem]
-            } else {
-                let errMSg = dict["message"] as! String
-                SVProgressHUD.showError(withStatus: errMSg)
-            }
+           
         }.catch { error in
             let errMsg = error.localizedDescription
-            SVProgressHUD.showError(withStatus: errMsg)
-            self.datas = []
         }.finally {
             self.tableView.mj_header.endRefreshing()
         }
     }
 ```
-结果![-w813](media/15951691682046/15951790901608.jpg)
+结果
 
+![](https://user-gold-cdn.xitu.io/2020/7/20/1736b666f96a7c23?w=1626&h=1458&f=png&s=905123)
 
 ##### 2. 带参数请求
 * OC
@@ -288,11 +265,11 @@ NS_ASSUME_NONNULL_END
     请求类：`QueryCategoryGoodsRequest`
     
     ```
-    #import "ICTPromiseRequest.h"
+    #import "BTPromiseRequest.h"
     
     NS_ASSUME_NONNULL_BEGIN
     
-    @interface QueryCategoryGoodsRequest : ICTPromiseRequest
+    @interface QueryCategoryGoodsRequest : BTPromiseRequest
     
     
     - (instancetype)initWithCategoryCode:(NSString *)categoryCode channel:(NSString *)channel;
@@ -330,7 +307,7 @@ NS_ASSUME_NONNULL_END
     }
     
     - (NSString *)requestUrl {
-        return @"/ict-customer-api/Customer/Goods/QueryCategoryGoods";
+        return @"/Customer/Goods/QueryCategoryGoods";
     }
     
     - (YTKRequestMethod)requestMethod {
@@ -357,17 +334,17 @@ NS_ASSUME_NONNULL_END
     ```
     
     结果：
-    ![-w1214](media/15951691682046/15951806722983.jpg)
 
+    ![](https://user-gold-cdn.xitu.io/2020/7/20/1736b6213d2a0de7?w=2428&h=1094&f=png&s=1054642)
 
 * Swift
 
-    接口： `/ict-customer-api/Invoice/Submit`
+    接口： `/Invoice/Submit`
 
 
     ```
     
-    class InvoiceCommitRequest: ICTPromiseRequest {
+    class InvoiceCommitRequest: BTPromiseRequest {
     
         private var invoiceTitle: String?
         
@@ -407,14 +384,8 @@ NS_ASSUME_NONNULL_END
         }
     
         override func requestUrl() -> String {
-            return "/ict-customer-api/Invoice/Submit"
-    //        return "/mock/148/Invoice/Submit"
+            return "/Invoice/Submit"
         }
-        
-        
-    //    override func baseUrl() -> String {
-    //        return "http://yapi.ichangtou.com"
-    //    }
         
     }
     
@@ -422,34 +393,20 @@ NS_ASSUME_NONNULL_END
     
     使用： 
 ```
-    @IBAction func commitData(_ sender: ICTCustomBtn) {
+    @IBAction func commitData(_ sender: CustomBtn) {
         
         let buyerType = invoiceType == .personal ? "03" : "01"
         
         let request = InvoiceCommitRequest(invoiceTitle: invoiceTitle!, taxNo: taxNo!, buyerType: buyerType, invoiceItems: invoiceItems!, email: email!)
-        
         request.launch().done { response in
-            guard response != nil else {
-                return
-            }
-            let dict = response as! Dictionary<String, Any>
-            let code = dict["code"] as! Int
-            if code == 2000 {
-                self.navigationController?.pushViewController(InvoiceCommitSuccessedVC(), animated: true)
-            } else {
-                let errMsg = dict["message"] as? String
-                SVProgressHUD.showError(withStatus: errMsg)
-            }
-
         }.catch { error in
-            SVProgressHUD.showError(withStatus: error.localizedDescription)
         }
         
     }
 ```
 
-    结果：![-w1308](media/15951691682046/15951810993594.jpg)
-
+结果：
+![](https://user-gold-cdn.xitu.io/2020/7/20/1736b625cbe8fb86?w=2616&h=888&f=png&s=628912)
 
 
 ##### 3. 链式（嵌套）请求
@@ -457,11 +414,11 @@ NS_ASSUME_NONNULL_END
 第一个请求： `/Bigclass/Course/Detail`
 
 ```
-#import "ICTPromiseRequest.h"
+#import "BTPromiseRequest.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BigclassCourseDetailRequest : ICTPromiseRequest
+@interface BigclassCourseDetailRequest : BTPromiseRequest
 
 
 - (instancetype)initWithSubjectId:(NSString *)subjectId StudyId:(NSString *)myStudyId;
@@ -509,7 +466,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (NSString *)requestUrl {
-    return @"/ict-customer-api/Bigclass/Course/Detail";
+    return @"/Bigclass/Course/Detail";
 }
 
 - (YTKRequestMethod)requestMethod {
@@ -526,11 +483,11 @@ NS_ASSUME_NONNULL_END
 
 
 ```
-#import "ICTPromiseRequest.h"
+#import "BTPromiseRequest.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BigclassCourseprogressDataRequest : ICTPromiseRequest
+@interface BigclassCourseprogressDataRequest : BTPromiseRequest
 
 
 - (instancetype)initWithSubjectId:(NSString *)subjectId StudyId:(NSString *)myStudyId version:(NSString *)version;
@@ -578,7 +535,7 @@ NS_ASSUME_NONNULL_END
 
 
 - (NSString *)requestUrl {
-    return @"/ict-customer-api/Bigclass/Course/progressData";
+    return @"/Bigclass/Course/progressData";
 }
 
 - (YTKRequestMethod)requestMethod {
@@ -614,11 +571,11 @@ NS_ASSUME_NONNULL_END
 ```
 
 结果： 
-![-w1195](media/15951691682046/15951832900178.jpg)
+
+![](https://user-gold-cdn.xitu.io/2020/7/20/1736b632783b7279?w=2390&h=1202&f=png&s=1110916)
 
 
-![-w979](media/15951691682046/15951833164938.jpg)
-
+![](https://user-gold-cdn.xitu.io/2020/7/20/1736b634d6ff8507?w=1958&h=958&f=png&s=735849)
 ##### 4. 组合（同时发起）请求
 前者接口2
 接口3： `/Class/Trial`
@@ -660,7 +617,7 @@ NS_ASSUME_NONNULL_END
 }
 
 - (NSString *)requestUrl {
-    return @"/ict-customer-api/Class/Trial";
+    return @"/Class/Trial";
 }
 
 - (YTKRequestMethod)requestMethod {
@@ -699,4 +656,5 @@ NS_ASSUME_NONNULL_END
 
 
 结果：
-![-w1030](media/15951691682046/15951840788527.jpg)
+
+![](https://user-gold-cdn.xitu.io/2020/7/20/1736b6378d26f729?w=2060&h=1018&f=png&s=969444)
