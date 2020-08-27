@@ -5,6 +5,5 @@ platform :ios, '8.0'
 target 'PromiseYTKNetwork_Example' do
   pod 'PromiseYTKNetwork', :path => '../'
 
-  pod ''
   
 end
