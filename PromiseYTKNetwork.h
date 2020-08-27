@@ -5,13 +5,6 @@
 //  Created by XGW on 2020/8/27.
 //
 
-#ifndef PromiseYTKNetwork_h
-#define PromiseYTKNetwork_h
-
-
-#endif /* PromiseYTKNetwork_h */
-
-
 
 #import <Foundation/Foundation.h>
 
