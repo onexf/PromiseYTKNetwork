@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'PromiseYTKNetwork'
-  s.version          = '0.1.3'
+  s.version          = '0.1.4'
   s.summary          = 'YTKNetwork结合PromiseKit，添加链式调用方法'
 
 # This description is used to generate tags and improve search results.
