@@ -6,7 +6,7 @@
 //  Copyright © 2020 ichangtou. All rights reserved.
 //
 
-#import "YTKNetwork.h"
+#import <YTKNetwork/YTKNetwork.h>
 #import <PromiseKit/PromiseKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
